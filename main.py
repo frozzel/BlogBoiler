@@ -117,6 +117,9 @@ def login():
 
 @app.route('/logout')
 def logout():
+    logged_in_users.discard(current_user.name)
+    online_users() 
+    logout_user()
     return redirect(url_for('get_all_posts'))
 
 
