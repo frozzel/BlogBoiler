@@ -10,14 +10,25 @@ from sqlalchemy import Integer, String, Text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 # Import your forms from the forms.py
-from forms import CreatePostForm, RegisterForm  # Adjust the import based on your forms.py location
+from forms import CreatePostForm, RegisterForm, LoginForm  # Adjust the import based on your forms.py location
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
-# TODO: Configure Flask-Login
+# Flask-Login's Login Manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# Store currently logged-in user IDs (you could use session IDs or usernames instead)
+logged_in_users = set()
+
+# Create a user_loader callback
+@login_manager.user_loader
+def load_user(user_id):
+    return db.get_or_404(User, user_id)
+
 
 
 # CREATE DATABASE
@@ -40,7 +51,6 @@ class BlogPost(db.Model):
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
 
 
-# TODO: Create a User table for all your registered users. 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -77,10 +87,29 @@ def register():
     return render_template("register.html", form=form)
 
 
-# TODO: Retrieve a user from the database based on their email. 
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    form = LoginForm()  # Replace with your LoginForm
+    if request.method == "POST":
+        
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash("That email does not exist, please try again.")
+            return redirect(url_for('login'))
+        
+        if not check_password_hash(user.password, password):
+            flash("Password incorrect, please try again.")
+            return redirect(url_for('login'))
+        
+        logged_in_users.add(user.name)
+        login_user(user)
+        online_users()
+        return redirect(url_for('get_all_posts'))
+    return render_template("login.html", form=form)
 
 
 @app.route('/logout')
@@ -161,6 +190,8 @@ def about():
 def contact():
     return render_template("contact.html")
 
+def online_users():
+    print(f"Currently logged in users: {list(logged_in_users)}")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)

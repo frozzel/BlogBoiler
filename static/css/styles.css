@@ -84,7 +84,10 @@
 *::after {
   box-sizing: border-box;
 }
-
+#red {
+    color: #ee6f57;
+    text-align: center;
+}
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;
