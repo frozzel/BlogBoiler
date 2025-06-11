@@ -17,6 +17,7 @@ A simple blog boilerplate built with Python Flask, featuring user registration, 
 - Flask-Login
 - Flask-SQLAlchemy
 - Flask-WTF
+- Werkzeug Security
 
 ## Installation
 
