@@ -9,6 +9,7 @@ A simple blog boilerplate built with Python Flask, featuring user registration, 
 - View all posts or posts by user
 - SQLite database integration
 - Simple, clean UI with Bootstrap
+- Some CRUD function
 
 ## Requirements
 
