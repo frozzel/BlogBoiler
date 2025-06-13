@@ -19,6 +19,7 @@ A simple blog boilerplate built with Python Flask, featuring user registration, 
 - Flask-SQLAlchemy
 - Flask-WTF
 - Werkzeug Security
+- Gunicorn Web Server
 
 ## Installation
 
